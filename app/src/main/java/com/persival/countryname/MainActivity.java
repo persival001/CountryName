@@ -1,11 +1,14 @@
 package com.persival.countryname;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.persival.countryname.adapters.CountryAdapter;
 import com.persival.countryname.model.CountryModel;
 import com.persival.countryname.model.Result;
 import com.persival.countryname.service.GetCountryDataService;
@@ -29,29 +32,38 @@ public class MainActivity extends AppCompatActivity {
         getCountries();
     }
 
-    public Object getCountries() {
+    public void getCountries() {
         GetCountryDataService getCountryDataService = RetrofitInstance.getService();
         Call<Result> call = getCountryDataService.getResult();
 
         call.enqueue(new Callback<Result>() {
             @Override
-            public void onResponse(Call<Result> call, Response<Result> response) {
+            public void onResponse(@NonNull Call<Result> call, @NonNull Response<Result> response) {
 
-                if(response.body() != null && response.body().getResult() != null) {
+                if (response.body() != null && response.body().getResult() != null) {
                     countries = (ArrayList<CountryModel>) response.body().getResult();
 
-                    for(CountryModel country : countries) {
-                        Log.i("Country", "" + country.getName());
-                    }
+                    viewData();
                 }
             }
 
             @Override
-            public void onFailure(Call<Result> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
+            public void onFailure(@NonNull Call<Result> call, @NonNull Throwable t) {
+                Toast.makeText(MainActivity.this,
+                    "Something went wrong...Please try later!",
+                    Toast.LENGTH_SHORT).show();
             }
         });
 
-        return countries;
+    }
+
+    private void viewData() {
+        CountryAdapter countryAdapter;
+        RecyclerView recyclerView;
+        recyclerView = findViewById(R.id.recyclerView);
+        countryAdapter = new CountryAdapter(countries);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(countryAdapter);
     }
 }
