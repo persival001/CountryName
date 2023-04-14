@@ -7,6 +7,10 @@ public class RetrofitInstance {
     private static final String BASE_URL = "https://api.printful.com/";
     private static Retrofit retrofit = null;
 
+    private RetrofitInstance() {
+        throw new IllegalStateException("Utility class");
+    }
+
     // Singleton pattern
     public static GetCountryDataService getService() {
 
